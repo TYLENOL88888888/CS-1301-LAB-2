@@ -26,6 +26,10 @@ st.header("Load Data")
 #    - Use a 'try-except' block or 'os.path.exists' to handle cases where the file doesn't exist.
 try:
     df = pd.read_csv("data.csv")
+    # Ensure columns are the correct type
+    df["Satisfaction"] = pd.to_numeric(df["Satisfaction"], errors='coerce')
+    df["Hours"] = pd.to_numeric(df["Hours"], errors='coerce')
+    df["Day"] = df["Day"].astype(str).str.strip()  # Clean day column
     st.write("Data loaded from data.csv:", df.head())  # Debug output
 except FileNotFoundError:
     df = pd.DataFrame(columns=["Day", "Hours", "Satisfaction"])
@@ -77,16 +81,19 @@ day_filter = st.selectbox("Filter by Day", unique_days, index=unique_days.index(
 st.session_state.day_filter = day_filter
 
 # Filter the DataFrame based on inputs using Streamlit's Session State.
-filtered_df = df[df["Satisfaction"] >= min_sat]
+filtered_df = df[df["Satisfaction"] >= min_sat].copy()  # Use .copy() to avoid SettingWithCopyWarning
+st.write("Filter 1 (Satisfaction >=):", filtered_df)  # Debug: After satisfaction filter
 if day_filter != "All":
     filtered_df = filtered_df[filtered_df["Day"] == day_filter]
+st.write("Filter 2 (Day ==):", filtered_df)  # Debug: After day filter
 
 if filtered_df.empty:
     st.warning("No data matches the filters. Adjust them or add more survey data.")
 else:
-    # Group by day and average hours
+    # Group by day and average hours, ensuring all days are included
     avg_df = filtered_df.groupby("Day")["Hours"].mean().reindex(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], fill_value=0).reset_index()
     avg_df.columns = ["Day", "Hours"]  # Rename columns for clarity
+    st.write("Averaged data for plot:", avg_df)  # Debug output
     st.line_chart(avg_df.set_index("Day")["Hours"]) #NEW
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
