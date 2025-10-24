@@ -112,8 +112,7 @@ if filtered_df.empty:
 else:
     # Sort by day to compute changes
     day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    filtered_df["Day"] = pd.Categorical(filtered_df["Day"], categories=day_order, ordered=True)
-    filtered_df = filtered_df.sort_values("Day")
+    filtered_df = filtered_df.sort_values("Day", key=lambda x: pd.Categorical(x, categories=day_order, ordered=True))
     # Calculate changes between consecutive days
     filtered_df['Satisfaction_Change'] = filtered_df['Satisfaction'].diff()
     filtered_df['Hours_Change'] = filtered_df['Hours'].diff()
