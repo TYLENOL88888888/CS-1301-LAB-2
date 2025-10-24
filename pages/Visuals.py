@@ -75,7 +75,7 @@ else:
     avg_df = avg_df.set_index("Day")
     st.bar_chart(avg_df["Hours"]) #NEW
     # - Write a description explaining what the graph shows.
-    st.write("This static graph displays the average screen time hours per day of the week from survey data, showing all days with zero hours where no data exists (non-interactive).")
+    st.write("This static graph displays the average screen time hours per day of the week from survey data.")
 
 # GRAPH 2: DYNAMIC GRAPH
 st.subheader("Graph 2: Dynamic - Average Change in Satisfaction vs Hours") 
@@ -156,7 +156,7 @@ try:
     st.scatter_chart(combined_df, x="Hours", y="Satisfaction", color="Source") #NEW
     st.write("Combined data points:", combined_df)  # Debug output showing names in table
     # - Remember to add a description and use '#NEW' comments.
-    st.write("This dynamic graph plots screen time hours against satisfaction levels from both data.json (Avengers characters: Iron Man, Captain America, Thor, Spider-Man) and data.csv (survey data), with points colored by source. The table below includes Avengers names.")
+    st.write("This dynamic graph plots screen time hours against satisfaction levels from both Avengers characters and the survey data, with points colored by source. See how YOU compare to them!")
 except FileNotFoundError:
     st.warning("One or both files (data.json or data.csv) not found. Please ensure they exist in the directory.")
 except json.JSONDecodeError:
