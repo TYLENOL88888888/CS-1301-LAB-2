@@ -31,11 +31,21 @@ try:
     df["Satisfaction"] = pd.to_numeric(df["Satisfaction"], errors='coerce')
     df["Hours"] = pd.to_numeric(df["Hours"], errors='coerce')
     df["Day"] = df["Day"].astype(str).str.strip()  # Clean day column
-    st.write("Data loaded from data.csv:", df.head())  # Debug output
+    # Removed st.write("Data loaded from data.csv:", df.head())
 except FileNotFoundError:
     df = pd.DataFrame(columns=["Day", "Hours", "Satisfaction"])
     st.warning("No survey data yet. Add some via the Survey page.")
     
+# 2. Load data.json and confirm loading
+try:
+    with open("data.json", "r") as f:
+        json.load(f)
+    st.success("data.json loaded successfully")
+except FileNotFoundError:
+    st.warning("data.json not found. Please ensure it exists in the directory.")
+except json.JSONDecodeError:
+    st.warning("Error decoding data.json. Please check the file format.")
+
 st.info("Data loading complete.")
 
 # GRAPH CREATION
