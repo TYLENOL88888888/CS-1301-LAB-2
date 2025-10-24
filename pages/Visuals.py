@@ -78,7 +78,7 @@ else:
     st.write("This static graph displays the average screen time hours per day of the week from survey data.")
 
 # GRAPH 2: DYNAMIC GRAPH
-st.subheader("Graph 2: Dynamic - Average Change in Satisfaction vs Hours") 
+st.subheader("Average Change in Satisfaction vs Hours") 
 # TODO:
 # - Create a dynamic graph showing average change in satisfaction compared to change in hours.
 # - Use at least one interactive widget (e.g., st.slider, st.selectbox, st.multiselect).
