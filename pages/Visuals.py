@@ -48,7 +48,7 @@ except FileNotFoundError:
 except json.JSONDecodeError:
     st.warning("Error decoding data.json. Please check the file format.")
 
-# Display success message if both files loaded successfully
+# Keep only "Data loading complete"
 st.info("Data loading complete.")
 
 # GRAPH CREATION
@@ -115,10 +115,13 @@ else:
     filtered_df['Hours_Change'] = filtered_df['Hours'].diff()
     # Average changes per day (handling NaN from first row)
     change_df = filtered_df.groupby("Day")[['Satisfaction_Change', 'Hours_Change']].mean().reindex(day_order, fill_value=0).reset_index()
+    # Ensure the index is a categorical type with the correct order
+    change_df["Day"] = pd.Categorical(change_df["Day"], categories=day_order, ordered=True)
+    change_df = change_df.set_index("Day")
     # Compute ratio or difference (using ratio for trend, avoiding division by zero)
     change_df['Change_Ratio'] = change_df['Satisfaction_Change'] / change_df['Hours_Change'].replace(0, pd.NA).fillna(0.001)  # Avoid division by zero
-    st.write("Change data for plot:", change_df)  # Debug output
-    st.line_chart(change_df.set_index("Day")["Change_Ratio"]) #NEW
+    st.write("Change data for plot:", change_df.reset_index())  # Debug output
+    st.line_chart(change_df["Change_Ratio"]) #NEW
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
     st.write("This dynamic display shows the average change in satisfaction per unit change in hours across days, filtered by a minimum satisfaction level (slider) and day (dropdown). All days are included, with zero changes where data is insufficient. Filtering by satisfaction level removes the lower satisfaction level in the calculations and shows only the changes above the satisfaction level, you can check the y axis of the graph for changes. Filtering by day selects only one day of the week and shows the changes on that day, the graph will display only one peak (one change).")
