@@ -34,7 +34,7 @@ with st.form("survey_form"):
         # --- YOUR LOGIC GOES HERE ---
         # TO DO:
         # 1. Create a new row of data from 'category_input' and 'value_input'.
-        new_data = {"Day": [day_input], "Hours": [hours_input], "Satisfaction": [sat_input]}
+        new_data = {"Day": [day], "Hours": [hours], "Satisfaction": [sat]}
         new_df = pd.DataFrame(new_data)
         # 2. Append this new row to the 'data.csv' file.
         #    - You can use pandas or Python's built-in 'csv' module.
