@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # WELCOME PAGE TITLE
-st.title("Welcome to the Phone Screen Time Dashboard! 📱")
+st.title("Welcome to the Phone Screen Time Evaluation! 📱")
 
 # INTRODUCTORY TEXT
 st.write("""
