@@ -103,10 +103,11 @@ else:
 st.subheader("Graph 3: Dynamic - Screen Time vs Satisfaction") 
 # TO DO:
 # - Create another dynamic graph.
-# - This graph must also be interactive and use Session State.
-if not filtered_df.empty:
-    st.scatter_chart(filtered_df, x="Hours", y="Satisfaction") #NEW
+# - This graph must show all data points from data.csv, updating as new data is added.
+if not df.empty:  # Use full df instead of filtered_df
+    st.scatter_chart(df, x="Hours", y="Satisfaction") #NEW
+    st.write("Data points for plot:", df[["Hours", "Satisfaction"]])  # Debug: Show all points
     # - Remember to add a description and use '#NEW' comments.
-    st.write("This dynamic graph plots screen time hours against satisfaction levels from survey data, updated based on the same satisfaction and day filters as Graph 2. Use the widgets above to interact.")
+    st.write("This dynamic graph plots all screen time hours against satisfaction levels from survey data, updating with every new entry in data.csv. It is not filtered by the widgets above.")
 else:
     st.write("No data to display.")
