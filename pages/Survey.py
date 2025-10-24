@@ -13,7 +13,7 @@ st.set_page_config(
 
 # PAGE TITLE AND USER DIRECTIONS
 st.title("Phone Screen Time Survey")
-st.write("Enter your screen time data for a specific day. You can and you SHOULD submit multiple times for different days for cool features and the best outcome of the data.")
+st.write("Enter your screen time data for a specific day. You can and you SHOULD submit multiple times for different days for cool features and the best outcome of the data. Look through your phone's data and have FUN!")
 
 # DATA INPUT FORM
 # 'st.form' creates a container that groups input widgets.
