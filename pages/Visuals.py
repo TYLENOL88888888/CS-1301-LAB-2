@@ -25,26 +25,32 @@ st.header("Load Data")
 
 # 1. Load the data from 'data.csv' into a pandas DataFrame.
 #    - Use a 'try-except' block or 'os.path.exists' to handle cases where the file doesn't exist.
+df_loaded = False
 try:
     df = pd.read_csv("data.csv")
     # Ensure columns are the correct type
     df["Satisfaction"] = pd.to_numeric(df["Satisfaction"], errors='coerce')
     df["Hours"] = pd.to_numeric(df["Hours"], errors='coerce')
     df["Day"] = df["Day"].astype(str).str.strip()  # Clean day column
-    # Removed st.write("Data loaded from data.csv:", df.head())
+    df_loaded = True
 except FileNotFoundError:
     df = pd.DataFrame(columns=["Day", "Hours", "Satisfaction"])
     st.warning("No survey data yet. Add some via the Survey page.")
-    
-# 2. Load data.json and confirm loading
+
+# 2. Load data.json
+json_loaded = False
 try:
     with open("data.json", "r") as f:
         json.load(f)
-    st.success("data.json loaded successfully")
+    json_loaded = True
 except FileNotFoundError:
     st.warning("data.json not found. Please ensure it exists in the directory.")
 except json.JSONDecodeError:
     st.warning("Error decoding data.json. Please check the file format.")
+
+# Display success message if both files loaded successfully
+if df_loaded and json_loaded:
+    st.success("Both data loaded successfully")
 
 st.info("Data loading complete.")
 
@@ -116,7 +122,7 @@ else:
     # Compute ratio or difference (using ratio for trend, avoiding division by zero)
     change_df['Change_Ratio'] = change_df['Satisfaction_Change'] / change_df['Hours_Change'].replace(0, pd.NA).fillna(0.001)  # Avoid division by zero
     st.write("Change data for plot:", change_df)  # Debug output
-    st.dataframe(change_df)  # Display table instead of chart
+    st.line_chart(change_df.set_index("Day")["Change_Ratio"]) #NEW
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
     st.write("This dynamic display shows the average change in satisfaction per unit change in hours across days, filtered by a minimum satisfaction level (slider) and day (dropdown). All days are included, with zero changes where data is insufficient. Filtering by satisfaction level removes the lower satisfaction level in the calculations and shows only the changes above the satisfaction level, you can check the y axis of the graph for changes. Filtering by day selects only one day of the week and shows the changes on that day, the graph will display only one peak (one change).")
@@ -130,23 +136,25 @@ try:
     # Load data.json
     with open("data.json", "r") as f:
         json_data = json.load(f)
-    # Extract JSON data
+    # Extract JSON data with labels
     json_points = json_data["data_points"]
     json_df = pd.DataFrame({
         "Hours": [point["Hours"] for point in json_points],
         "Satisfaction": [point["Satisfaction"] for point in json_points],
-        "Source": ["Avengers"] * len(json_points)
+        "Source": ["Avengers"] * len(json_points),
+        "Label": [point["label"] for point in json_points]  # Add Avengers names
     })
     # Prepare CSV data (filter for valid points)
     csv_df = df[["Hours", "Satisfaction"]].dropna()
     csv_df["Source"] = ["Survey"] * len(csv_df)
+    csv_df["Label"] = [""] * len(csv_df)  # Empty labels for survey data
     # Combine datasets
     combined_df = pd.concat([json_df, csv_df], ignore_index=True)
     # Plot combined data
     st.scatter_chart(combined_df, x="Hours", y="Satisfaction", color="Source") #NEW
-    st.write("Combined data points:", combined_df)  # Debug output showing both sources
+    st.write("Combined data points:", combined_df)  # Debug output showing names in table
     # - Remember to add a description and use '#NEW' comments.
-    st.write("This dynamic graph plots screen time hours against satisfaction levels from both data.json (Avengers characters: Iron Man, Captain America, Thor, Spider-Man) and data.csv (survey data), with points colored by source.")
+    st.write("This dynamic graph plots screen time hours against satisfaction levels from both data.json (Avengers characters: Iron Man, Captain America, Thor, Spider-Man) and data.csv (survey data), with points colored by source. The table below includes Avengers names.")
 except FileNotFoundError:
     st.warning("One or both files (data.json or data.csv) not found. Please ensure they exist in the directory.")
 except json.JSONDecodeError:
