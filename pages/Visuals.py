@@ -77,6 +77,9 @@ st.session_state.min_sat = min_sat
 
 # User interaction with st.selectbox #NEW
 unique_days = ["All"] + sorted(df["Day"].unique().tolist())
+# Ensure day_filter is valid in unique_days to avoid ValueError
+if st.session_state.day_filter not in unique_days:
+    st.session_state.day_filter = unique_days[0]  # Default to first option
 day_filter = st.selectbox("Filter by Day", unique_days, index=unique_days.index(st.session_state.day_filter))
 st.session_state.day_filter = day_filter
 
