@@ -67,10 +67,13 @@ if df.empty:
     st.write("No data to display for static graph.")
 else:
     # Predefine all days and compute averages, filling missing days with 0
-    all_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    avg_df = df.groupby("Day")["Hours"].mean().reindex(all_days, fill_value=0).reset_index()
+    day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    avg_df = df.groupby("Day")["Hours"].mean().reindex(day_order, fill_value=0).reset_index()
     avg_df.columns = ["Day", "Hours"]  # Rename columns for clarity
-    st.bar_chart(avg_df.set_index("Day")["Hours"]) #NEW
+    # Set Day as categorical with correct order and use as index
+    avg_df["Day"] = pd.Categorical(avg_df["Day"], categories=day_order, ordered=True)
+    avg_df = avg_df.set_index("Day")
+    st.bar_chart(avg_df["Hours"]) #NEW
     # - Write a description explaining what the graph shows.
     st.write("This static graph displays the average screen time hours per day of the week from survey data, showing all days with zero hours where no data exists (non-interactive).")
 
