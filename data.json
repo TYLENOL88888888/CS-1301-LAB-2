@@ -1,21 +1,25 @@
 {
-    "chart_title": "Average Daily Screen Time by App Category",
+    "chart_title": "Avengers Interaction Satisfaction vs Hours Spent",
     "data_points": [
         {
-            "label": "Social Media",
-            "value": 3.5
+            "label": "Iron Man",
+            "Hours": 3.2,
+            "Satisfaction": 5.6
         },
         {
-            "label": "Entertainment",
-            "value": 2.0
+            "label": "Captain America",
+            "Hours": 5.7,
+            "Satisfaction": 9.2
         },
         {
-            "label": "Productivity",
-            "value": 1.5
+            "label": "Thor",
+            "Hours": 4.1,
+            "Satisfaction": 7.8
         },
         {
-            "label": "Gaming",
-            "value": 1.0
+            "label": "Spider-Man",
+            "Hours": 6.9,
+            "Satisfaction": 10.0
         }
     ]
 }
