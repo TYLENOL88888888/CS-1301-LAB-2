@@ -49,8 +49,7 @@ with st.form("survey_form"):
         updated_df.to_csv("../data.csv", index=False)
         
         st.success("Your data has been submitted!")
-        st.write(f"You entered: **Category:** {category_input}, **Value:** {value_input}")
-
+        st.write(f"You entered: **Day:** {day_input}, **Hours:** {hours_input}, **Satisfaction:** {sat_input}")
 
 # DATA DISPLAY
 # This section shows the current contents of the CSV file, which helps in debugging.
