@@ -28,7 +28,7 @@ st.header("Load Data")
 # 1. Load the data from 'data.csv' into a pandas DataFrame.
 #    - Use a 'try-except' block or 'os.path.exists' to handle cases where the file doesn't exist.
 try:
-    df = pd.read_csv("data.csv")
+    df = pd.read_csv("../data.csv")
 except FileNotFoundError:
     df = pd.DataFrame(columns=["Day", "Hours", "Satisfaction"])
     st.warning("No survey data yet. Add some via the Survey page.")
