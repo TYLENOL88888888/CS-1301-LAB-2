@@ -57,9 +57,9 @@ st.divider() # Adds a horizontal line for visual separation.
 st.header("Current Data in CSV")
 
 # Check if the CSV file exists and is not empty before trying to read it.
-if os.path.exists('data.csv') and os.path.getsize('data.csv') > 0:
+if os.path.exists('../data.csv') and os.path.getsize('../data.csv') > 0:
     # Read the CSV file into a pandas DataFrame.
-    current_data_df = pd.read_csv('data.csv')
+    current_data_df = pd.read_csv('../data.csv')
     # Display the DataFrame as a table.
     st.dataframe(current_data_df)
 else:
