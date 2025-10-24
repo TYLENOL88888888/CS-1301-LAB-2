@@ -37,7 +37,7 @@ except FileNotFoundError:
 try:
     with open("../data.json", "r") as f:
         json_data = json.load(f)
-    json_df = pd.DataFrame({"Category": json_data["categories"], "Hours": json_data["hours"]})
+        json_df = pd.DataFrame(json_data["data_points"])[["label", "value"]].rename(columns={"label": "Category", "value": "Hours"})
 except FileNotFoundError:
     json_df = pd.DataFrame(columns=["Category", "Hours"])
     st.warning("No JSON data loaded yet.")
