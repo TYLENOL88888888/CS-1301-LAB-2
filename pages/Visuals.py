@@ -35,7 +35,7 @@ except FileNotFoundError:
 # 2. Load the data from 'data.json' into a Python dictionary.
 #    - Use a 'try-except' block here as well.
 try:
-    with open("data.json", "r") as f:
+    with open("../data.json", "r") as f:
         json_data = json.load(f)
     # Convert data_points to a DataFrame with label as Category and value as Hours
     json_df = pd.DataFrame(json_data["data_points"])
