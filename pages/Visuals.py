@@ -122,7 +122,7 @@ else:
     # Compute ratio or difference (using ratio for trend, avoiding division by zero)
     change_df['Change_Ratio'] = change_df['Satisfaction_Change'] / change_df['Hours_Change'].replace(0, pd.NA).fillna(0.001)  # Avoid division by zero
     st.write("Change data for plot:", change_df)  # Debug output
-    st.line_chart(change_df.set_index("Day")["Change_Ratio"]) #NEW
+    st.dataframe(change_df)  # Display table instead of chart
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
     st.write("This dynamic display shows the average change in satisfaction per unit change in hours across days, filtered by a minimum satisfaction level (slider) and day (dropdown). All days are included, with zero changes where data is insufficient. Filtering by satisfaction level removes the lower satisfaction level in the calculations and shows only the changes above the satisfaction level, you can check the y axis of the graph for changes. Filtering by day selects only one day of the week and shows the changes on that day, the graph will display only one peak (one change).")
