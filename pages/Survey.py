@@ -33,9 +33,10 @@ with st.form("survey_form"):
     if submitted:
         # --- YOUR LOGIC GOES HERE ---
         # TO DO:
-        # 1. Create a new row of data from 'category_input' and 'value_input'.
+        # 1. Create a new row of data from 'day', 'hours', and 'sat' (corrected from category_input/value_input).
         new_data = {"Day": [day], "Hours": [hours], "Satisfaction": [sat]}
         new_df = pd.DataFrame(new_data)
+        st.write("New data to save:", new_df)  # Debug: Show data before saving
         # 2. Append this new row to the 'data.csv' file.
         #    - You can use pandas or Python's built-in 'csv' module.
         #    - Make sure to open the file in 'append' mode ('a').
@@ -43,11 +44,10 @@ with st.form("survey_form"):
         try:
             existing_df = pd.read_csv("data.csv")
             updated_df = pd.concat([existing_df, new_df], ignore_index=True)
-        except FileNotFoundError:
+        except (FileNotFoundError, pd.errors.EmptyDataError):
             updated_df = new_df
         
         updated_df.to_csv("data.csv", index=False)
-        
         st.success("Your data has been submitted!")
         st.write(f"You entered: **Day:** {day}, **Hours:** {hours}, **Satisfaction:** {sat}")
 
@@ -58,9 +58,12 @@ st.header("Current Data in CSV")
 
 # Check if the CSV file exists and is not empty before trying to read it.
 if os.path.exists('data.csv') and os.path.getsize('data.csv') > 0:
-    # Read the CSV file into a pandas DataFrame.
-    current_data_df = pd.read_csv('data.csv')
-    # Display the DataFrame as a table.
-    st.dataframe(current_data_df)
+    # Read the CSV file into a pandas DataFrame, handling empty data errors.
+    try:
+        current_data_df = pd.read_csv('data.csv')
+        # Display the DataFrame as a table.
+        st.dataframe(current_data_df)
+    except pd.errors.EmptyDataError:
+        st.warning("The 'data.csv' file exists but is empty or contains no valid data.")
 else:
     st.warning("The 'data.csv' file is empty or does not exist yet.")
