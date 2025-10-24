@@ -102,10 +102,10 @@ st.session_state.day_filter = day_filter
 
 # Filter the DataFrame based on inputs using Streamlit's Session State.
 filtered_df = df[df["Satisfaction"] >= min_sat].copy()  # Use .copy() to avoid SettingWithCopyWarning
-st.write("Filter 1 (Satisfaction >=):", filtered_df)  # Debug: After satisfaction filter
+st.write("Filter 1 (Satisfaction):", filtered_df)  # Debug: After satisfaction filter
 if day_filter != "All":
     filtered_df = filtered_df[filtered_df["Day"] == day_filter]
-st.write("Filter 2 (Day ==):", filtered_df)  # Debug: After day filter
+st.write("Filter 2 (Day):", filtered_df)  # Debug: After day filter
 
 if filtered_df.empty:
     st.warning("No data matches the filters. Adjust them or add more survey data.")
