@@ -49,9 +49,6 @@ except json.JSONDecodeError:
     st.warning("Error decoding data.json. Please check the file format.")
 
 # Display success message if both files loaded successfully
-if df_loaded and json_loaded:
-    st.success("Both data loaded successfully")
-
 st.info("Data loading complete.")
 
 # GRAPH CREATION
