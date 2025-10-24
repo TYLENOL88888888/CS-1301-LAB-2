@@ -1,9 +1,8 @@
 # This creates the page for displaying data visualizations.
-# It should read data from both 'data.csv' and 'data.json' to create graphs.
+# It should read data from 'data.csv' to create graphs.
 
 import streamlit as st
 import pandas as pd
-import json # The 'json' module is needed to work with JSON files.
 import os   # The 'os' module helps with file system operations.
 
 # PAGE CONFIGURATION
@@ -31,26 +30,12 @@ try:
 except FileNotFoundError:
     df = pd.DataFrame(columns=["Day", "Hours", "Satisfaction"])
     st.warning("No survey data yet. Add some via the Survey page.")
-# 2. Load the data from 'data.json' into a Python dictionary (optional, not used here).
-#    - Use a 'try-except' block here as well.
-try:
-    with open("data.json", "r") as f:
-        json_data = json.load(f)
-    json_df = pd.DataFrame(json_data["data_points"])
-    json_df = json_df.rename(columns={"label": "Category", "value": "Hours"})
-    st.write("Data loaded from data.json:", json_df.head())  # Debug output
-except FileNotFoundError:
-    json_df = pd.DataFrame(columns=["Category", "Hours"])
-    st.warning("No JSON data loaded yet.")
-except KeyError:
-    json_df = pd.DataFrame(columns=["Category", "Hours"])
-    st.warning("Invalid JSON structure. Ensure 'data_points' contains 'label' and 'value'.")
     
 st.info("Data loading complete.")
 
 # GRAPH CREATION
 # The lab requires you to create 3 graphs: one static and two dynamic.
-# You must use both the CSV and JSON data sources at least once (JSON is optional here).
+# All graphs use data from 'data.csv'.
 
 st.divider()
 st.header("Graphs")
@@ -59,17 +44,17 @@ st.header("Graphs")
 st.subheader("Graph 1: Static - Average Hours per Day of the Week") 
 # TO DO:
 # - Create a static graph (e.g., bar chart, line chart) using st.bar_chart() or st.line_chart(). #NEW
-# - Use data from the CSV file.
+# - Use data from the CSV file, showing all days even with no data.
 if df.empty:
     st.write("No data to display for static graph.")
 else:
-    avg_df = df.groupby("Day")["Hours"].mean().reset_index()
-    day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    avg_df["DayOrder"] = avg_df["Day"].apply(lambda x: day_order.index(x))
-    avg_df = avg_df.sort_values("DayOrder")
+    # Predefine all days and compute averages, filling missing days with 0
+    all_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    avg_df = df.groupby("Day")["Hours"].mean().reindex(all_days, fill_value=0).reset_index()
+    avg_df.columns = ["Day", "Hours"]  # Rename columns for clarity
     st.bar_chart(avg_df.set_index("Day")["Hours"]) #NEW
     # - Write a description explaining what the graph shows.
-    st.write("This static graph displays the overall average screen time hours per day of the week, calculated from all survey entries (non-interactive).")
+    st.write("This static graph displays the average screen time hours per day of the week from survey data, showing all days with zero hours where no data exists (non-interactive).")
 
 # GRAPH 2: DYNAMIC GRAPH
 st.subheader("Graph 2: Dynamic - Average Screen Time per Day") 
@@ -100,21 +85,17 @@ if filtered_df.empty:
     st.warning("No data matches the filters. Adjust them or add more survey data.")
 else:
     # Group by day and average hours
-    avg_df = filtered_df.groupby("Day")["Hours"].mean().reset_index()
-    # Sort by day order
-    day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    avg_df["DayOrder"] = avg_df["Day"].apply(lambda x: day_order.index(x))
-    avg_df = avg_df.sort_values("DayOrder")
+    avg_df = filtered_df.groupby("Day")["Hours"].mean().reindex(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], fill_value=0).reset_index()
+    avg_df.columns = ["Day", "Hours"]  # Rename columns for clarity
     st.line_chart(avg_df.set_index("Day")["Hours"]) #NEW
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
-    st.write("This dynamic graph shows the average screen time hours per day, filtered by a minimum satisfaction level (using the slider) and a specific day (using the dropdown). Adjust the filters to update the graph.")
+    st.write("This dynamic graph shows the average screen time hours per day, filtered by a minimum satisfaction level (using the slider) and a specific day (using the dropdown). All days are shown with zero where no data exists.")
 
 # GRAPH 3: DYNAMIC GRAPH
 st.subheader("Graph 3: Dynamic - Screen Time vs Satisfaction") 
 # TO DO:
 # - Create another dynamic graph.
-# - If you used CSV data for Graph 1 & 2, you MUST use JSON data here (or vice-versa).
 # - This graph must also be interactive and use Session State.
 if not filtered_df.empty:
     st.scatter_chart(filtered_df, x="Hours", y="Satisfaction") #NEW
