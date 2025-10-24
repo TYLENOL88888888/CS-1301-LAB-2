@@ -4,6 +4,7 @@
 import streamlit as st
 import pandas as pd
 import os   # The 'os' module helps with file system operations.
+import json  # Added to handle JSON file
 
 # PAGE CONFIGURATION
 st.set_page_config(
@@ -39,7 +40,7 @@ st.info("Data loading complete.")
 
 # GRAPH CREATION
 # The lab requires you to create 3 graphs: one static and two dynamic.
-# All graphs use data from 'data.csv'.
+# Graphs 1 and 2 use data.csv; Graph 3 uses data from both data.csv and data.json.
 
 st.divider()
 st.header("Graphs")
@@ -58,7 +59,7 @@ else:
     avg_df.columns = ["Day", "Hours"]  # Rename columns for clarity
     st.bar_chart(avg_df.set_index("Day")["Hours"]) #NEW
     # - Write a description explaining what the graph shows.
-    st.write("This static graph displays the average screen time hours per day of the week from survey data.")
+    st.write("This static graph displays the average screen time hours per day of the week from survey data, showing all days with zero hours where no data exists (non-interactive).")
 
 # GRAPH 2: DYNAMIC GRAPH
 st.subheader("Average Change in Satisfaction vs Hours") 
@@ -108,21 +109,37 @@ else:
     st.dataframe(change_df)  # Display table instead of chart
     # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
     # - Write a description explaining the graph and how to interact with it.
-    st.write("This dynamic display shows the average change in satisfaction per unit change in hours across days, 
-            filtered by a minimum satisfaction level (slider) and day (dropdown). All days are included, with zero changes where data is insufficient.
-            Filtering by satisfaction level removes the lower satisfaction level in the calculations and shows only the changes above the satisfaction level,
-            you can check the y axis of the graph for changes.
-            Filtering by day selects only one day of the week and shows the changes on that day, the graph will display only one peak (one change).")
+    st.write("This dynamic display shows the average change in satisfaction per unit change in hours across days, filtered by a minimum satisfaction level (slider) and day (dropdown). All days are included, with zero changes where data is insufficient. Filtering by satisfaction level removes the lower satisfaction level in the calculations and shows only the changes above the satisfaction level, you can check the y axis of the graph for changes. Filtering by day selects only one day of the week and shows the changes on that day, the graph will display only one peak (one change).")
 
 # GRAPH 3: DYNAMIC GRAPH
 st.subheader("Screen Time vs Satisfaction") 
 # TO DO:
 # - Create another dynamic graph.
-# - This graph must show all data points from data.csv, updating as new data is added.
-if not df.empty:  # Use full df instead of filtered_df
-    st.scatter_chart(df, x="Hours", y="Satisfaction") #NEW
-    st.write("Data points for plot:", df[["Hours", "Satisfaction"]])  # Debug: Show all points
+# - This graph must show all data points from both data.json and data.csv.
+try:
+    # Load data.json
+    with open("data.json", "r") as f:
+        json_data = json.load(f)
+    # Extract JSON data
+    json_points = json_data["data_points"]
+    json_df = pd.DataFrame({
+        "Hours": [point["Hours"] for point in json_points],
+        "Satisfaction": [point["Satisfaction"] for point in json_points],
+        "Source": ["Avengers"] * len(json_points)
+    })
+    # Prepare CSV data (filter for valid points)
+    csv_df = df[["Hours", "Satisfaction"]].dropna()
+    csv_df["Source"] = ["Survey"] * len(csv_df)
+    # Combine datasets
+    combined_df = pd.concat([json_df, csv_df], ignore_index=True)
+    # Plot combined data
+    st.scatter_chart(combined_df, x="Hours", y="Satisfaction", color="Source") #NEW
+    st.write("Combined data points:", combined_df)  # Debug output showing both sources
     # - Remember to add a description and use '#NEW' comments.
-    st.write("This dynamic graph plots all screen time hours against satisfaction levels from survey data, updating with every new entry in data.csv. It is not filtered by the widgets above.")
-else:
-    st.write("No data to display.")
+    st.write("This dynamic graph plots screen time hours against satisfaction levels from both data.json (Avengers characters: Iron Man, Captain America, Thor, Spider-Man) and data.csv (survey data), with points colored by source.")
+except FileNotFoundError:
+    st.warning("One or both files (data.json or data.csv) not found. Please ensure they exist in the directory.")
+except json.JSONDecodeError:
+    st.warning("Error decoding data.json. Please check the file format.")
+except Exception as e:
+    st.warning(f"An error occurred: {str(e)}")
