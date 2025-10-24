@@ -37,11 +37,16 @@ except FileNotFoundError:
 try:
     with open("../data.json", "r") as f:
         json_data = json.load(f)
-        json_df = pd.DataFrame(json_data["data_points"])[["label", "value"]].rename(columns={"label": "Category", "value": "Hours"})
+    # Convert data_points to a DataFrame with label as Category and value as Hours
+    json_df = pd.DataFrame(json_data["data_points"])
+    json_df = json_df.rename(columns={"label": "Category", "value": "Hours"})
 except FileNotFoundError:
     json_df = pd.DataFrame(columns=["Category", "Hours"])
     st.warning("No JSON data loaded yet.")
-
+except KeyError:
+    json_df = pd.DataFrame(columns=["Category", "Hours"])
+    st.warning("Invalid JSON structure. Ensure 'data_points' contains 'label' and 'value'.")
+    
 st.info("Data loading complete.")
 
 # GRAPH CREATION
@@ -95,9 +100,11 @@ else:
     day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     avg_df["DayOrder"] = avg_df["Day"].apply(lambda x: day_order.index(x))
     avg_df = avg_df.sort_values("DayOrder")
+    st.line_chart(avg_df.set_index("Day")["Hours"])
 # - Add a '#NEW' comment next to at least 3 new Streamlit functions you use in this lab.
 # - Write a description explaining the graph and how to interact with it.
-
+    st.write("This graph shows the average screen time hours per day from survey data, updated based on satisfaction and day filters.")
+    
 # GRAPH 3: DYNAMIC GRAPH
 st.subheader("Graph 3: Dynamic - Screen Time vs Satisfaction") # CHANGE THIS TO THE TITLE OF YOUR GRAPH
 # TO DO:
